@@ -1,35 +1,37 @@
 package com.example.backend.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
 
 
 @Entity(name = "restaurant_tables")
 public class Table {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     
     private int seats;
     private String zone;
     private int position;
 
+    @Embedded
+    private Score score;
+
     public Table() {
     }
 
-    public Table(int id, int seats, String zone, int position) {
+    public Table(Integer id, int seats, String zone, int position, Score score) {
         this.id = id;
         this.seats = seats;
         this.zone = zone;
         this.position = position;
+        this.score = score;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -52,5 +54,12 @@ public class Table {
     }
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public Score getScore() {
+        return score;
+    }
+    public void setScore(Score score) {
+        this.score = score;
     }
 }
