@@ -1,29 +1,31 @@
 package com.example.backend.services;
 
-import org.springframework.stereotype.Component;
-import com.example.backend.repositories.TableRepository;
-import com.example.backend.repositories.ReservationRepository;
+import java.util.List;
+import org.springframework.stereotype.Service;
 import com.example.backend.entities.Reservation;
+import com.example.backend.repositories.ReservationRepository;
 
-@Component
+@Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
-    private final TableRepository tableRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, TableRepository tableRepository) {
+    public ReservationService(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
-        this.tableRepository = tableRepository;
     }
 
-    public void addReservation(Reservation reservation) {
-        reservationRepository.save(reservation);
+    public List<Reservation> getReservations() {
+        return reservationRepository.findAll();
     }
 
-    public void deleteReservation(int id) {
+    public Reservation addReservation(Reservation reservation) {
+        return reservationRepository.save(reservation);
+    }
+
+    public void deleteReservation(Integer id) {
         reservationRepository.deleteById(id);
     }
 
-    public void updateReservation(Reservation reservation) {
-        reservationRepository.save(reservation);
+    public Reservation updateReservation(Reservation reservation) {
+        return reservationRepository.save(reservation);
     }
 }

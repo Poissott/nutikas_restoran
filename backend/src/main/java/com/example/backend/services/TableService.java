@@ -1,31 +1,31 @@
 package com.example.backend.services;
 
-import org.springframework.stereotype.Component;
-import com.example.backend.repositories.TableRepository;
+import java.util.List;
+import org.springframework.stereotype.Service;
 import com.example.backend.entities.Table;
-import java.util.ArrayList;
+import com.example.backend.repositories.TableRepository;
 
-@Component
+@Service
 public class TableService {
     private final TableRepository tableRepository;
-    
+
     public TableService(TableRepository tableRepository) {
         this.tableRepository = tableRepository;
     }
 
-    public ArrayList<Table> getTableRepository() {
-        return new ArrayList<>(tableRepository.findAll());
+    public List<Table> getTables() {
+        return tableRepository.findAll();
     }
 
-    public void addTable(Table table) {
-        tableRepository.save(table);
+    public Table addTable(Table table) {
+        return tableRepository.save(table);
     }
 
-    public void deleteTable(int id) {
+    public void deleteTable(Integer id) {
         tableRepository.deleteById(id);
     }
 
-    public void updateTable(Table table) {
-        tableRepository.save(table);
+    public Table updateTable(Table table) {
+        return tableRepository.save(table);
     }
 }
