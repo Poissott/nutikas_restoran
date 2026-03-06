@@ -13,6 +13,9 @@ public class Table {
     private String zone;
     private int position;
 
+    public Table() {
+    }
+
     public Table(int id, int seats, String zone, int position) {
         this.id = id;
         this.seats = seats;
