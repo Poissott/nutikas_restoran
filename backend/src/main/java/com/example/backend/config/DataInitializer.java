@@ -25,9 +25,9 @@ public class DataInitializer implements CommandLineRunner {
             return;
         }
 
-        Table windowTable = tableRepository.save(new Table(null, 2, "Window", 1, new Score(null, 40, 50, 5)));
-        Table familyTable = tableRepository.save(new Table(null, 6, "Children", 2, new Score(null, 20, 10, 45)));
-        Table quietTable = tableRepository.save(new Table(null, 4, "Quiet", 3, new Score(null, 50, 15, 5)));
+        Table windowTable = tableRepository.save(new Table(null, 2, "Window", 1, 10, 40, 50, 50, new Score(null, 40, 50, 5)));
+        Table familyTable = tableRepository.save(new Table(null, 6, "Children", 2, 10, 140, 50, 50, new Score(null, 20, 10, 45)));
+        Table quietTable = tableRepository.save(new Table(null, 4, "Quiet", 3, 10, 240, 50, 50, new Score(null, 50, 15, 5)));
 
         reservationRepository.save(new Reservation(null, windowTable.getId(), "2026-03-13T18:00", "2026-03-13T19:30", 2));
         reservationRepository.save(new Reservation(null, familyTable.getId(), "2026-03-13T19:00", "2026-03-13T20:30", 5));

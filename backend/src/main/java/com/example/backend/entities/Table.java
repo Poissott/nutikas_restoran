@@ -13,6 +13,10 @@ public class Table {
     private int seats;
     private String zone;
     private int position;
+    private int positionX;
+    private int positionY;
+    private int width;
+    private int height;
 
     @Embedded
     private Score score;
@@ -20,11 +24,15 @@ public class Table {
     public Table() {
     }
 
-    public Table(Integer id, int seats, String zone, int position, Score score) {
+    public Table(Integer id, int seats, String zone, int position, int positionX, int positionY, int width, int height, Score score) {
         this.id = id;
         this.seats = seats;
         this.zone = zone;
         this.position = position;
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.width = width;
+        this.height = height;
         this.score = score;
     }
 
@@ -61,5 +69,37 @@ public class Table {
     }
     public void setScore(Score score) {
         this.score = score;
+    }
+
+
+    public int getPositionX() {
+        return positionX;
+    }
+    public void setPositionX(int positionX) {
+        this.positionX = positionX;
+    }
+
+
+    public int getPositionY() {
+        return positionY;
+    }
+    public void setPositionY(int positionY) {
+        this.positionY = positionY;
+    }
+
+
+    public int getWidth() {
+        return width;
+    }
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+
+    public int getHeight() {
+        return height;
+    }
+    public void setHeight(int height) {
+        this.height = height;
     }
 }
