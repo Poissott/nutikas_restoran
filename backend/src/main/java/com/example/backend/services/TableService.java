@@ -17,6 +17,10 @@ public class TableService {
         return tableRepository.findAll();
     }
 
+    public Table getTableById(Integer id) {
+        return tableRepository.findById(id).orElse(null);
+    }
+
     public Table addTable(Table table) {
         return tableRepository.save(table);
     }

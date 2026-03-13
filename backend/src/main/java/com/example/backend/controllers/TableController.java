@@ -29,6 +29,11 @@ public class TableController {
         return tableService.getTables();
     }
 
+    @GetMapping("/{id}")
+    public Table getTableById(@PathVariable Integer id) {
+        return tableService.getTableById(id);
+    }
+
     @PostMapping
     public void addTable(@RequestBody Table table) {
         tableService.addTable(table);
