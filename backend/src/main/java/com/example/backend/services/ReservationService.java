@@ -17,6 +17,10 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    public List<Reservation> getReservationsByDate(String date) {
+        return reservationRepository.findByStartTimeStartingWithOrEndTimeStartingWith(date, date);
+    }
+
     public Reservation addReservation(Reservation reservation) {
         return reservationRepository.save(reservation);
     }

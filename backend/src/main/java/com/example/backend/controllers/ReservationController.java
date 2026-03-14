@@ -19,6 +19,11 @@ public class ReservationController {
         return reservationService.getReservations();
     }
 
+    @GetMapping("/{date}")
+    public List<Reservation> getReservationsByDate(@PathVariable String date) {
+        return reservationService.getReservationsByDate(date);
+    }
+
     @PostMapping
     public Reservation addReservation(@RequestBody Reservation reservation) {
         return reservationService.addReservation(reservation);

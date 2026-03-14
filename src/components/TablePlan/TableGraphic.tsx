@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Layer, Rect, Text } from 'react-konva';
 
+
+
 type RestaurantTable = {
     id: number;
     seats: number;
@@ -15,9 +17,10 @@ type RestaurantTable = {
 type TableGraphicProps = {
   stageWidth: number;
   stageHeight: number;
+  takenTableIds: number[];
 };
 
-function TableGraphic({ stageWidth, stageHeight }: TableGraphicProps) {
+function TableGraphic({ stageWidth, stageHeight, takenTableIds }: TableGraphicProps) {
   const [tableData, setTableData] = useState<RestaurantTable[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,6 +57,7 @@ function TableGraphic({ stageWidth, stageHeight }: TableGraphicProps) {
         const tableHeight = table.height;
         const tableX = roomX + table.positionX;
         const tableY = roomY + table.positionY;
+        const isTaken = takenTableIds.includes(table.id);
 
         return (
           <Rect
@@ -62,7 +66,7 @@ function TableGraphic({ stageWidth, stageHeight }: TableGraphicProps) {
             y={tableY}
             width={tableWidth}
             height={tableHeight}
-            fill={"#86efac"}
+            fill={isTaken ? "#fca5a5" : "#86efac"}
             cornerRadius={s(10)}
             stroke="#1f2937"
             strokeWidth={s(1.3)}

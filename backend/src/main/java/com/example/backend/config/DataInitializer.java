@@ -57,32 +57,32 @@ public class DataInitializer implements CommandLineRunner {
 
 
         // Tulp 1 - broneeringud
-        reservationRepository.save(new Reservation(null, table1.getId(), "2026-03-13T18:00", "2026-03-13T19:30", 2));
-        reservationRepository.save(new Reservation(null, table2.getId(), "2026-03-13T19:00", "2026-03-13T20:30", 2));
-        reservationRepository.save(new Reservation(null, table3.getId(), "2026-03-13T20:00", "2026-03-13T21:30", 2));
-        reservationRepository.save(new Reservation(null, table4.getId(), "2026-03-13T21:00", "2026-03-13T22:30", 2));
+        reservationRepository.save(new Reservation(null, table1.getId(), "2026-03-15T18:00", "2026-03-15T19:30", 2));
+        reservationRepository.save(new Reservation(null, table2.getId(), "2026-03-15T19:00", "2026-03-15T20:30", 2));
+        reservationRepository.save(new Reservation(null, table3.getId(), "2026-03-15T20:00", "2026-03-15T21:30", 2));
+        reservationRepository.save(new Reservation(null, table4.getId(), "2026-03-15T21:00", "2026-03-15T22:00", 2));
 
         // Tulp 2 - broneeringud
-        reservationRepository.save(new Reservation(null, table5.getId(), "2026-03-13T21:00", "2026-03-13T22:30", 4));
-        reservationRepository.save(new Reservation(null, table6.getId(), "2026-03-13T22:00", "2026-03-13T23:30", 4));
-        reservationRepository.save(new Reservation(null, table7.getId(), "2026-03-13T23:00", "2026-03-14T00:30", 4));
+        reservationRepository.save(new Reservation(null, table5.getId(), "2026-03-15T21:00", "2026-03-15T22:30", 4));
+        reservationRepository.save(new Reservation(null, table6.getId(), "2026-03-15T16:00", "2026-03-15T17:30", 4));
+        reservationRepository.save(new Reservation(null, table7.getId(), "2026-03-15T20:00", "2026-03-16T21:30", 4));
 
         // Tulp 3 - broneeringud
-        reservationRepository.save(new Reservation(null, table8.getId(), "2026-03-13T23:00", "2026-03-14T00:30", 6));
-        reservationRepository.save(new Reservation(null, table9.getId(), "2026-03-14T00:00", "2026-03-14T01:30", 4));
-        reservationRepository.save(new Reservation(null, table10.getId(), "2026-03-14T01:00", "2026-03-14T02:30", 4));
-        reservationRepository.save(new Reservation(null, table11.getId(), "2026-03-14T02:00", "2026-03-14T03:30", 3));
+        reservationRepository.save(new Reservation(null, table8.getId(), "2026-03-15T15:00", "2026-03-16T16:30", 6));
+        reservationRepository.save(new Reservation(null, table9.getId(), "2026-03-15T15:00", "2026-03-15T16:30", 4));
+        reservationRepository.save(new Reservation(null, table10.getId(), "2026-03-15T16:00", "2026-03-15T17:30", 4));
+        reservationRepository.save(new Reservation(null, table11.getId(), "2026-03-15T18:00", "2026-03-15T19:30", 3));
 
         // Tulp 4 - broneeringud
-        reservationRepository.save(new Reservation(null, table12.getId(), "2026-03-14T02:00", "2026-03-14T03:30", 6));
-        reservationRepository.save(new Reservation(null, table13.getId(), "2026-03-14T03:00", "2026-03-14T04:30", 4));
-        reservationRepository.save(new Reservation(null, table14.getId(), "2026-03-14T04:00", "2026-03-14T05:30", 4));
-        reservationRepository.save(new Reservation(null, table15.getId(), "2026-03-14T05:00", "2026-03-14T06:30", 3));
+        reservationRepository.save(new Reservation(null, table12.getId(), "2026-03-16T02:00", "2026-03-16T03:30", 6));
+        reservationRepository.save(new Reservation(null, table13.getId(), "2026-03-16T03:00", "2026-03-16T04:30", 4));
+        reservationRepository.save(new Reservation(null, table14.getId(), "2026-03-16T04:00", "2026-03-16T05:30", 4));
+        reservationRepository.save(new Reservation(null, table15.getId(), "2026-03-16T05:00", "2026-03-16T06:30", 3));
 
         // Tulp 5 - broneeringud
-        reservationRepository.save(new Reservation(null, table16.getId(), "2026-03-14T05:00", "2026-03-14T06:30", 2));
-        reservationRepository.save(new Reservation(null, table17.getId(), "2026-03-14T06:00", "2026-03-14T07:30", 2));
-        reservationRepository.save(new Reservation(null, table18.getId(), "2026-03-14T07:00", "2026-03-14T08:30", 2));
-        reservationRepository.save(new Reservation(null, table19.getId(), "2026-03-14T08:00", "2026-03-14T09:30", 2));
+        reservationRepository.save(new Reservation(null, table16.getId(), "2026-03-16T09:00", "2026-03-16T10:00", 2));
+        reservationRepository.save(new Reservation(null, table17.getId(), "2026-03-16T10:00", "2026-03-16T11:30", 2));
+        reservationRepository.save(new Reservation(null, table18.getId(), "2026-03-16T11:00", "2026-03-16T11:45", 2));
+        reservationRepository.save(new Reservation(null, table19.getId(), "2026-03-16T15:00", "2026-03-16T16:30", 2));
     }
 }

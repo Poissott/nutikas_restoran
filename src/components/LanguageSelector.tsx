@@ -21,7 +21,6 @@ function LanguageSelector() {
                         color: "#f4f4f5",
                         "&:hover": {
                             borderColor: "#4b5563",
-
                         },
                     }),
                     singleValue: (base) => ({
