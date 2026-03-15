@@ -194,12 +194,13 @@ http://localhost:5173
 8. Review the booking in the confirmation dialog.
 9. Click `Submit booking`.
 
-## Booking Behavior
+## Booking Behavior 
 
 - Demo reservations generated on backend startup have random durations.
 - User-created bookings from the frontend currently use a fixed duration of `90 minutes`.
 - The available start-time grid uses `15-minute` increments.
 - Demo data is generated for the next `30 days` when the database is empty.
+- After booking submission you will not be re-navigated to home page, but you will be able to see the room plan again with your previous booking shown as `occupied` for demo purposes.
 
 ## Build Commands
 
@@ -294,3 +295,28 @@ Check:
 - real language switching
 - post-booking navigation or success screen
 - persistent production database instead of H2 in-memory storage
+
+## History
+
+You can see commit histories in various forms, but I will break down the production history here as well (with amount of time it took):
+
+- Initialization of the vite/react framework tree structures 
+- Initialization of Spring Boot backend
+- Development of backend entities: `Reservation`, `Table`, `Recommendation` (3 hours)
+    - Not very difficult. Wrote the core logic myself, but I also used AI to speed up the process by generating the repetitive parts of the code.
+- Development of backend services and controllers of the named entities (3 hours)
+    - Also not very difficult. Wrote the core logic myself.
+- Development of `Tableplan` - graphic UI elements of the restaurant room plan (5 hours)
+    - Had to learn Konva framework, which I was not familiar with. Was not really hard. The entire graphic UI part of this I drew myself.
+- Initialization of pages `StartPage`, `ReservationPage` (3 hours)
+    - Just rewriting core aspects of React and TS
+- Development of `TimeTable` logic (6 hours)
+    - This one was slightly harder at times, I also sometimes used AI for ideas and sometimes out of convienence some generation. I wish I had developed the possibility to change the duration of the booking for the users (or something adjacent).
+- Development of initial backend data randomizer logic (3 hours)
+    - This was also slightly harder. If there was a function I wasn't aware of, I used AI to get a stronger understanding of the topic.
+- Development of guest and comfort selection (3 hours)
+    - Simple React Select elements, most of the logic I wrote myself. I also read documentation.
+- Development of recommendation logic (4 hours)
+    - Some parts were easy and intuitive, some parts were hard. The hard parts here were probably the hardest things in this project, so out of calculative decision I used AI generation for some parts of this.
+- Development of confirmation system (4 hours)
+    - The core ideas here are not really hard (so I wrote them mostly myself), but as a very covering and finalizing part in the project, I also used AI generation to polish the edges of this project, so there would be less errors.
