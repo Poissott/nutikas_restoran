@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Layer, Rect, Text } from 'react-konva';
+import { animate } from 'motion';
 
 // Laudade graafiline komponent
 
@@ -32,7 +33,8 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
   const [error, setError] = useState<string | null>(null);
   const [hoveredTableId, setHoveredTableId] = useState<number | null>(null);
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
-  const [pulsePhase, setPulsePhase] = useState(0);
+  const [pressedTableId, setPressedTableId] = useState<number | null>(null);
+  const [pulseScale, setPulseScale] = useState(1);
 
   const scale = 1.12;
   const roomWidth = 600 * scale;
@@ -106,15 +108,23 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
     if (!showSelectableTables) {
       setHoveredTableId(null);
       setSelectedTableId(null);
+      setPressedTableId(null);
+      setPulseScale(1);
       return;
     }
 
-    // Intervallide määramine pulseeriva efekti jaoks soovitatud laudadele
-    const intervalId = window.setInterval(() => {
-      setPulsePhase((currentPhase) => (currentPhase + 0.12) % (Math.PI * 2));
-    }, 50);
+    // Pulseeriv animatsioon
+    const pulseAnimation = animate(0, 1, {
+      duration: 1.05,
+      ease: 'easeInOut',
+      repeat: Infinity,
+      repeatType: 'reverse',
+      onUpdate: (value) => {
+        setPulseScale(1 + value * 0.1);
+      },
+    });
 
-    return () => window.clearInterval(intervalId);
+    return () => pulseAnimation.stop();
   }, [showSelectableTables]);
 
   // get-meetod laudade andmete laadimiseks backendist
@@ -137,6 +147,52 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
     loadTables();
   }, []);
 
+  // Laudade ID-de kogum, mis on broneeritud külaliskonna suuruse tõttu liiga sobimatud, et soovitada
+  const blockedByPartyRuleTableIds = useMemo(() => {
+    if (!partysize) {
+      return new Set<number>();
+    }
+
+    const availableFittingTables = tableData.filter(
+      (table) => table.seats >= partysize && !takenTableIds.includes(table.id),
+    );
+
+    const blockedIds = new Set<number>();
+
+    // 1-2 külalist: ei soovitata 4- ja 6-kohalisi laudu, kui on olemas sobivaid väiksemaid laudu
+    if (partysize === 1 || partysize === 2) {
+      const hasPreferredSmallTable = availableFittingTables.some(
+        (table) => table.seats !== 4 && table.seats !== 6,
+      );
+      const hasAvailableFourSeatTable = availableFittingTables.some((table) => table.seats === 4);
+
+      availableFittingTables.forEach((table) => {
+        if (table.seats === 4 && hasPreferredSmallTable) {
+          blockedIds.add(table.id);
+        }
+
+        if (table.seats === 6 && (hasPreferredSmallTable || hasAvailableFourSeatTable)) {
+          blockedIds.add(table.id);
+        }
+      });
+    }
+
+    // 3 külalist: ei soovitata 6-kohalisi laudu, kui on olemas sobivaid väiksemaid laudu
+    if (partysize === 3) {
+      const hasAvailableNonSixSeatTable = availableFittingTables.some((table) => table.seats !== 6);
+
+      if (hasAvailableNonSixSeatTable) {
+        availableFittingTables.forEach((table) => {
+          if (table.seats === 6) {
+            blockedIds.add(table.id);
+          }
+        });
+      }
+    }
+
+    return blockedIds;
+  }, [tableData, partysize, takenTableIds]);
+
   return (
     <Layer>
       {/* Laudade kuvamine: roheline on saadaval, punane on hõivatud */}
@@ -147,6 +203,7 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
         const tableY = roomY + table.positionY;
         const isTaken = takenTableIds.includes(table.id);
         const canFitParty = partysize ? table.seats >= partysize : true;
+        const isBlockedByPartyRule = blockedByPartyRuleTableIds.has(table.id);
 
         return (
           <Rect
@@ -155,7 +212,7 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
             y={tableY}
             width={tableWidth}
             height={tableHeight}
-            fill={isTaken ? "#fca5a5" : canFitParty ? "#89adaa" : '#fed7aa'}
+            fill={isTaken ? "#fca5a5" : canFitParty && !isBlockedByPartyRule ? "#89adaa" : '#fed7aa'}
             cornerRadius={s(10)}
             stroke="#1f2937"
             strokeWidth={s(1.3)}
@@ -174,13 +231,20 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
         const tableX = roomX + table.positionX;
         const tableY = roomY + table.positionY;
         const recommendation = recommendedBasedOnComfort(table);
+        const isBlockedByPartyRule = blockedByPartyRuleTableIds.has(table.id);
 
-        {/* Liiga suur külaliskond, laud on hõivatud - lauda ei soovitata */}
-        if (!showSelectableTables || !partysize || table.seats < partysize || takenTableIds.includes(table.id)) {
+        // Liiga suur külaliskond, laud on hoivatud - lauda ei soovitata.
+        if (
+          !showSelectableTables
+          || !partysize
+          || table.seats < partysize
+          || takenTableIds.includes(table.id)
+          || isBlockedByPartyRule
+        ) {
           return null;
         }
 
-        {/* Kui on valitud mugavused, kuid selle järgi soovitusi ei ole - lauda ei soovitata */}
+        // Kui on valitud mugavused, kuid selle jargi soovitusi ei ole - lauda ei soovitata.
         if (selectedComfortScores.length > 0 && !recommendation?.isRecommended) {
           return null;
         }
@@ -194,8 +258,10 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
           : { fill: '#86efac', stroke: '#66be1d' };
         const isHovered = hoveredTableId === table.id;
         const isSelected = selectedTableId === table.id;
-        const pulseScale = 1 + ((Math.sin(pulsePhase) + 1) / 2) * 0.08;
-        const scaleFactor = isSelected || isHovered ? 1.08 : pulseScale;
+        const isPressed = pressedTableId === table.id;
+        const baseOverlayScale = isSelected || isHovered ? 1.08 : pulseScale;
+        const pressedScale = Math.max(1.01, baseOverlayScale - 0.05);
+        const scaleFactor = isPressed ? pressedScale : baseOverlayScale;
         const scaledWidth = tableWidth * scaleFactor;
         const scaledHeight = tableHeight * scaleFactor;
         const scaledX = tableX - (scaledWidth - tableWidth) / 2;
@@ -224,9 +290,14 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
               event.target.getStage()?.container().style.setProperty('cursor', 'pointer');
             }}
             onMouseLeave={(event) => {
+              setPressedTableId((currentId) => (currentId === table.id ? null : currentId));
               setHoveredTableId((currentId) => (currentId === table.id ? null : currentId));
               event.target.getStage()?.container().style.setProperty('cursor', 'default');
             }}
+            onMouseDown={() => setPressedTableId(table.id)}
+            onMouseUp={() => setPressedTableId((currentId) => (currentId === table.id ? null : currentId))}
+            onTouchStart={() => setPressedTableId(table.id)}
+            onTouchEnd={() => setPressedTableId((currentId) => (currentId === table.id ? null : currentId))}
             onClick={() => setSelectedTableId(table.id)}
             onTap={() => setSelectedTableId(table.id)}
           />
