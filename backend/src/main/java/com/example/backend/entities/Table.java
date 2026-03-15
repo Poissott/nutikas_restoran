@@ -2,7 +2,7 @@ package com.example.backend.entities;
 
 import jakarta.persistence.*;
 
-
+// Laudade entity klass, mis esindab restorani laudu koos nende omaduste ja skooridega.
 
 @Entity(name = "restaurant_tables")
 public class Table {
@@ -11,8 +11,6 @@ public class Table {
     private Integer id;
     
     private int seats;
-    private String zone;
-    private int position;
     private int positionX;
     private int positionY;
     private int width;
@@ -24,11 +22,9 @@ public class Table {
     public Table() {
     }
 
-    public Table(Integer id, int seats, String zone, int position, int positionX, int positionY, int width, int height, Score score) {
+    public Table(Integer id, int seats, int positionX, int positionY, int width, int height, Score score) {
         this.id = id;
         this.seats = seats;
-        this.zone = zone;
-        this.position = position;
         this.positionX = positionX;
         this.positionY = positionY;
         this.width = width;
@@ -48,20 +44,6 @@ public class Table {
     }
     public void setSeats(int seats) {
         this.seats = seats;
-    }
-
-    public String getZone() {
-        return zone;
-    }
-    public void setZone(String zone) {
-        this.zone = zone;
-    }
-
-    public int getPosition() {
-        return position;
-    }
-    public void setPosition(int position) {
-        this.position = position;
     }
 
     public Score getScore() {

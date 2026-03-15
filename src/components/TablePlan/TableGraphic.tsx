@@ -6,8 +6,6 @@ import { Layer, Rect, Text } from 'react-konva';
 type RestaurantTable = {
     id: number;
     seats: number;
-    zone: string;
-    position: number;
     positionX: number;
     positionY: number;
     width: number;
@@ -145,7 +143,7 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
             y={tableY}
             width={tableWidth}
             height={tableHeight}
-            fill={isTaken ? "#fca5a5" : canFitParty ? "#80b193" : '#fed7aa'}
+            fill={isTaken ? "#fca5a5" : canFitParty ? "#89adaa" : '#fed7aa'}
             cornerRadius={s(10)}
             stroke="#1f2937"
             strokeWidth={s(1.3)}

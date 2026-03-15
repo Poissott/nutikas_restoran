@@ -2,6 +2,8 @@ package com.example.backend.entities;
 
 import jakarta.persistence.*;
 
+// Broneeringu entity klass, mis esindab broneeringuid restoranis
+
 @Entity(name = "reservations")
 public class Reservation {
     @Id

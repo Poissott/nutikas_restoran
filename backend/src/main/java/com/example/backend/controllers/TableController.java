@@ -24,26 +24,31 @@ public class TableController {
         this.tableService = tableService;
     }
     
+    // get-meetod laudade saamiseks
     @GetMapping
     public List<Table> getTables() {
         return tableService.getTables();
     }
 
+    // get-meetod laua saamiseks ID järgi
     @GetMapping("/{id}")
     public Table getTableById(@PathVariable Integer id) {
         return tableService.getTableById(id);
     }
 
+    // post-meetod uue laua lisamiseks
     @PostMapping
     public void addTable(@RequestBody Table table) {
         tableService.addTable(table);
     }
 
+    // delete-meetod laua kustutamiseks ID järgi
     @DeleteMapping("/{id}")
     public void deleteTable(@PathVariable Integer id) {
         tableService.deleteTable(id);
     }
 
+    // put-meetod laua uuendamiseks ID järgi
     @PutMapping("/{id}")
     public Table updateTable(@PathVariable Integer id, @RequestBody Table table) {
         table.setId(id);

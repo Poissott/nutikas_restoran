@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import com.example.backend.entities.Table;
 import com.example.backend.repositories.TableRepository;
 
+
+// Service klass laudade haldamiseks, mis kasutab TableRepositoryt andmebaasitehingute jaoks
 @Service
 public class TableService {
     private final TableRepository tableRepository;

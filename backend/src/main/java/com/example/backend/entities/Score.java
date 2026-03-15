@@ -2,6 +2,8 @@ package com.example.backend.entities;
 
 import jakarta.persistence.Embeddable;
 
+// Embeddable klass laudade skoori hoidmiseks erinevates kategooriates.
+
 @Embeddable
 public class Score {
     private Integer totalScore;
@@ -11,7 +13,7 @@ public class Score {
 
     public Score() {}
 
-    public Score(Integer totalScore, Integer quietnessScore, Integer windowScore, Integer playAreaScore) {
+    public Score(Integer quietnessScore, Integer windowScore, Integer playAreaScore) {
         this.totalScore = quietnessScore + windowScore + playAreaScore;
         this.quietnessScore = quietnessScore;
         this.windowScore = windowScore;

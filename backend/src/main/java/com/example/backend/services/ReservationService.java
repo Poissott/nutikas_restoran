@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.example.backend.entities.Reservation;
 import com.example.backend.repositories.ReservationRepository;
 
+// Service klass broneeringute haldamiseks, mis kasutab ReservationRepositoryt andmebaasitehingute jaoks
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
