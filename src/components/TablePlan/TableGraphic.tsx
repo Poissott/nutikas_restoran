@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Layer, Rect, Text } from 'react-konva';
 
-
+// Laudade graafiline komponent
 
 type RestaurantTable = {
     id: number;
@@ -10,10 +10,10 @@ type RestaurantTable = {
     positionY: number;
     width: number;
     height: number;
-    score: {
-        quietnessScore: number;
-        windowScore: number;
-        playAreaScore: number;
+    score: { // 0-150
+        quietnessScore: number; // 0-50, kõrgem on vaiksem
+        windowScore: number; // 0-50, kõrgem on aknale lähemal
+        playAreaScore: number; // 0-50, kõrgem on laste mängualale lähemal
     };
 };
 
@@ -27,6 +27,7 @@ type TableGraphicProps = {
 };
 
 function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showSelectableTables = false, comforts }: TableGraphicProps) {
+  // Komponendi oleku haldamine
   const [tableData, setTableData] = useState<RestaurantTable[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [hoveredTableId, setHoveredTableId] = useState<number | null>(null);
@@ -40,6 +41,7 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
   const roomY = (stageHeight - roomHeight) / 2;
   const s = (value: number) => value * scale;
 
+  // Valitud mugavuste tuvastamine
   const selectedComfortScores = useMemo(() => {
     return comforts.flatMap((comfort) => {
       if (comfort === 'quiet' || comfort === 'quietness') {
@@ -58,6 +60,9 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
     });
   }, [comforts]);
 
+  // Laudade soovitamise algoritm valitud mugavuste põhjal
+  // Vastavalt valikute hulgale liidetakse vastavad hulga elementide skoorid kokku ning 
+  // võrreldakse neid dünaamiliselt arvutatud lävendiga.
   const recommendedBasedOnComfort = (table: RestaurantTable) => {
     if (!partysize || selectedComfortScores.length === 0) {
       return null;
@@ -66,6 +71,7 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
     const score = selectedComfortScores.reduce((sum, key) => sum + (table.score?.[key] ?? 0), 0);
     const maxScore = selectedComfortScores.length * 50;
 
+    // Soovituste lävend: (1 mugavus = 25 punkti), (2 mugavust = 50 punkti), (3 mugavust = 100 punkti)
     let recommendationThreshold = 100;
     if (selectedComfortScores.length === 1) {
       recommendationThreshold = 25;
@@ -81,10 +87,12 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
     };
   };
 
+  // Värvi gradiendi arvutamine soovituste skoori põhjal
   const mixChannel = (start: number, end: number, ratio: number) => {
     return Math.round(start + (end - start) * ratio);
   };
 
+  // Soovituste värv muutub gradiendi järgi vastavalt skoorile
   const getRecommendationColors = (score: number, threshold: number, maxScore: number) => {
     const normalized = Math.min(1, Math.max(0, (score - threshold) / (maxScore - threshold)));
     const fill = `rgb(${mixChannel(220, 34, normalized)}, ${mixChannel(252, 197, normalized)}, ${mixChannel(231, 94, normalized)})`;
@@ -93,6 +101,7 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
     return { fill, stroke };
   };
 
+  // Laudade interaktiivsuse ja pulseerimise haldamine
   useEffect(() => {
     if (!showSelectableTables) {
       setHoveredTableId(null);
@@ -100,6 +109,7 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
       return;
     }
 
+    // Intervallide määramine pulseeriva efekti jaoks soovitatud laudadele
     const intervalId = window.setInterval(() => {
       setPulsePhase((currentPhase) => (currentPhase + 0.12) % (Math.PI * 2));
     }, 50);
@@ -107,6 +117,7 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
     return () => window.clearInterval(intervalId);
   }, [showSelectableTables]);
 
+  // get-meetod laudade andmete laadimiseks backendist
   useEffect(() => {
     const loadTables = async () => {
       try {
@@ -128,6 +139,7 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
 
   return (
     <Layer>
+      {/* Laudade kuvamine: roheline on saadaval, punane on hõivatud */}
       {tableData.map((table) => {
         const tableWidth = table.width;
         const tableHeight = table.height;
@@ -155,6 +167,7 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
         );
       })}
 
+      {/* Soovitatud laudade interaktiivne overlay */}
       {tableData.map((table) => {
         const tableWidth = table.width;
         const tableHeight = table.height;
@@ -162,10 +175,12 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
         const tableY = roomY + table.positionY;
         const recommendation = recommendedBasedOnComfort(table);
 
+        {/* Liiga suur külaliskond, laud on hõivatud - lauda ei soovitata */}
         if (!showSelectableTables || !partysize || table.seats < partysize || takenTableIds.includes(table.id)) {
           return null;
         }
 
+        {/* Kui on valitud mugavused, kuid selle järgi soovitusi ei ole - lauda ei soovitata */}
         if (selectedComfortScores.length > 0 && !recommendation?.isRecommended) {
           return null;
         }
@@ -218,6 +233,7 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
         );      
       })}
 
+      {/* Laudade kohtade arv */}
       {tableData.map((table) => {
         const tableWidth = table.width;
         const tableHeight = table.height;
@@ -239,6 +255,7 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
         );
       })}
 
+      {/* Vea kuvamine laudade kuvamise ebaõnnestumise korral */}
       {error && (
         <Text
           text={`Table API error: ${error}`}

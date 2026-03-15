@@ -6,6 +6,9 @@ import TableGraphic from "./TableGraphic";
 import TimeTable from "../TimeTable";
 import Select from "react-select";
 
+// Restoraniplaani põhikomponent, mis kasutab React Konva't restorani ja laudade graafiliseks kuvamiseks
+
+// Kõik kättesaadavad ajad, mida saab broneerida
 const DEFAULT_TIMES = [
     "08:00", "08:15", "08:30", "08:45",
     "09:00", "09:15", "09:30", "09:45",
@@ -25,6 +28,7 @@ const DEFAULT_TIMES = [
 
 type AvailableTimes = Record<string, string[]>;
 
+// Broneeringu tüübi (Reservation) definitsioon
 type Reservation = {
   id: number;
   tableId: number;
@@ -33,6 +37,7 @@ type Reservation = {
   partySize: number;
 };
 
+// Aja teisendamine minutiteks, et lihtsustada broneeringute võrdlemist
 function toMinutes(iso: string) {
   const [, time] = iso.split("T");
   const [h, m] = time.split(":").map(Number);
@@ -43,6 +48,7 @@ function MainStage() {
   const stageWidth = 1400;
   const stageHeight = 800;
 
+  // Komponendi oleku haldamine
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -61,6 +67,7 @@ function MainStage() {
     setSelectedTime(null);
     const dayKey = selectedDate.format("YYYY-MM-DD");
 
+    // get-meetod broneeringute kuvamiseks valitud päeva põhjal
     (async () => {
       setLoading(true);
       try {
@@ -76,6 +83,7 @@ function MainStage() {
     })();
   }, [selectedDate]);
 
+  // Eelnevalt broneeritud laudade ID-de arvutamine, et kuvada need graafikus hõivatud laudadena
   const takenTableIds = useMemo(() => {
     if (!selectedTime) return [];
     const [h, m] = selectedTime.split(":").map(Number);
@@ -90,12 +98,14 @@ function MainStage() {
       .map((r) => r.tableId);
   }, [reservations, selectedTime]);
 
+  // Vabad aegade defineerimine
   const availableTimes: AvailableTimes = useMemo(() => {
     if (!selectedDate) return {};
     const dateKey = selectedDate.format("YYYY-MM-DD");
     return { [dateKey]: DEFAULT_TIMES };
   }, [selectedDate]);
 
+  // Elementide varjutamine, kui ajavaliku modal on avatud
   const controlPanelVisualState = isTimeTableOpen
     ? { opacity: 0.45, filter: "saturate(0.7)", transition: "opacity 120ms ease" }
     : { opacity: 1, filter: "none", transition: "opacity 120ms ease" };
@@ -103,8 +113,10 @@ function MainStage() {
   return (
     <div className="min-h-screen flex items-center justify-center overflow-auto">
       <div style={{ minWidth: stageWidth, minHeight: stageHeight, position: "relative" }}>
+        {/* Restorani graafiline esitus */}
         <Stage width={stageWidth} height={stageHeight}>
           <RestaurantGraphic stageWidth={stageWidth} stageHeight={stageHeight} />
+          {/* Lauad on esitatud eraldi */}
           <TableGraphic
             stageWidth={stageWidth}
             stageHeight={stageHeight}
@@ -115,6 +127,7 @@ function MainStage() {
           />
         </Stage>
 
+        {/* Kalendri ja ajavaliku modal */}
         <div style={{ position: "absolute", top: "1rem", left: "1rem", zIndex: 10 }}>
           <TimeTable
             selectedDate={selectedDate}
@@ -128,6 +141,7 @@ function MainStage() {
           />
         </div>
 
+        {/* Drop-down menu külaliste arvu valimiseks */}
         <div style={{ position: "absolute", top: "5rem", left: "1rem", zIndex: 20, ...controlPanelVisualState }}>
           <p style={{ marginBottom: "0.5rem", color: "#2e2e2e", fontWeight: "bold", fontSize: "1.1rem" }}>
             Select the amount of guests:
@@ -161,6 +175,7 @@ function MainStage() {
           )}
         </div>
 
+        {/* Drop-down menu eelistatud mugavuste valimiseks */}
         <div style={{ position: "absolute", top: "11rem", left: "1rem", zIndex: 10, isolation: "isolate", ...controlPanelVisualState }}>
           <p style={{ marginBottom: "0.5rem", color: "#2e2e2e", fontWeight: "bold", fontSize: "1.1rem" }}>
             Select your comforts:

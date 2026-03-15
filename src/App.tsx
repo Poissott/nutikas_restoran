@@ -3,7 +3,7 @@ import StartPage from "./pages/StartPage";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-
+// React router äpi lehtede seostamiseks.
 const appRouter = createBrowserRouter([
     {
       path: "/",

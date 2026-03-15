@@ -6,6 +6,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import dayjs from "dayjs";
 
+// Aja valimise komponent (modal), mis võimaldab kasutajal valida broneeringu kuupäeva ja kellaaega
+
 type Reservation = {
   id: number;
   tableId: number;
@@ -38,12 +40,15 @@ function TimeTable({
   onSelectedTimeChange,
   onDialogOpenChange,
 }: TimeTableProps) {
+  // Komponendi oleku haldamine
   const [isTimeTableOpen, setIsTimeTableOpen] = useState(true);
 
+  // Dialoogi avamise ja sulgemise teavitamine vanemkomponendile
   useEffect(() => {
     onDialogOpenChange?.(isTimeTableOpen);
   }, [isTimeTableOpen, onDialogOpenChange]);
 
+  // Ajavalikute genereerimine dropdown menüüse valitud kuupäeva põhjal
   const timeOptions = useMemo<Option[]>(() => {
     if (!selectedDate) return [];
 
@@ -53,16 +58,19 @@ function TimeTable({
     return baseTimes.map((t) => ({ value: t, label: t }));
   }, [selectedDate, availableTimes]);
 
+  // Valitud aja objekt
   const selectedOption = selectedTime
     ? { value: selectedTime, label: selectedTime }
     : null;
 
   return (
     <>
+      {/* Nupp aja valimise dialoogi avamiseks */}
       <button type="button" onClick={() => setIsTimeTableOpen(true)}>
         Select time
       </button>
 
+      {/* Aja valimise dialoog */}
       {isTimeTableOpen ? (
         <div
           role="dialog"
@@ -88,6 +96,7 @@ function TimeTable({
           >
             <h2 className="text-lg font-bold mb-4 !text-gray-800">Select date</h2>
 
+            {/* Kalender (MUI) */}
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateCalendar
                 value={selectedDate}
@@ -130,6 +139,7 @@ function TimeTable({
 
             <h2 className="text-lg font-bold mb-4 !text-gray-800">Select time</h2>
 
+            {/* Kellaaja valiku dropdown menüü */}
             <Select
               options={timeOptions}
               value={selectedOption}
@@ -141,6 +151,7 @@ function TimeTable({
               styles={{ option: (base) => ({ ...base, color: "#000" }) }}
             />
 
+            {/* Submit nupp kellaaja ja kuupäeva kinnitamiseks */}
             <div style={{ marginTop: "1rem", textAlign: "right" }}>
               <button type="button" onClick={() => setIsTimeTableOpen(false)}>
                 Submit
