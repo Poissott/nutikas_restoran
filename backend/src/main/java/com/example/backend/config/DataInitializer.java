@@ -5,14 +5,33 @@ import com.example.backend.entities.Score;
 import com.example.backend.entities.Table;
 import com.example.backend.repositories.ReservationRepository;
 import com.example.backend.repositories.TableRepository;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Random;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
 
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+    private static final LocalTime OPENING_TIME = LocalTime.of(8, 0);
+    private static final LocalTime CLOSING_TIME = LocalTime.of(22, 0);
+    private static final int SLOT_MINUTES = 15;
+    private static final int MIN_RESERVATION_MINUTES = 45;
+    private static final int MAX_RESERVATION_MINUTES = 180;
+    private static final int MIN_DAYS_AHEAD = 0;
+    private static final int MAX_DAYS_AHEAD = 6;
+
     private final TableRepository tableRepository;
     private final ReservationRepository reservationRepository;
+    private final Random random = new Random();
 
     public DataInitializer(TableRepository tableRepository, ReservationRepository reservationRepository) {
         this.tableRepository = tableRepository;
@@ -21,68 +40,125 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (tableRepository.count() > 0 || reservationRepository.count() > 0) {
+        if (reservationRepository.count() > 0) {
             return;
         }
 
+        if (tableRepository.count() == 0) {
+            seedDefaultTables();
+        }
+
+        seedRandomReservations();
+    }
+
+    private void seedDefaultTables() {
         // Tulp 1
-        Table table1 = tableRepository.save(new Table(null, 2, "m", 1, 10, 50, 60, 60, new Score(null, 45, 40, 8)));
-        Table table2 = tableRepository.save(new Table(null, 2, "m", 2, 10, 200, 60, 60, new Score(null, 35, 32, 12)));
-        Table table3 = tableRepository.save(new Table(null, 2, "m", 3, 10, 350, 60, 60, new Score(null, 48, 20, 6)));
-        Table table4 = tableRepository.save(new Table(null, 2, "m", 4, 10, 500, 60, 60, new Score(null, 48, 20, 6)));
+        tableRepository.save(new Table(null, 2, "m", 1, 10, 50, 60, 60, new Score(null, 40, 50, 50)));
+        tableRepository.save(new Table(null, 2, "m", 2, 10, 200, 60, 60, new Score(null, 50, 50, 30)));
+        tableRepository.save(new Table(null, 2, "m", 3, 10, 350, 60, 60, new Score(null, 50, 40, 10)));
+        tableRepository.save(new Table(null, 2, "m", 4, 10, 500, 60, 60, new Score(null, 40, 10, 0)));
 
         // Tulp 2
-        Table table5 = tableRepository.save(new Table(null, 4, "m", 5, 150, 160, 70, 70, new Score(null, 42, 38, 4)));
-        Table table6 = tableRepository.save(new Table(null, 4, "m", 6, 150, 320, 70, 70, new Score(null, 42, 38, 4)));
-        Table table7 = tableRepository.save(new Table(null, 4, "m", 7, 150, 480, 70, 70, new Score(null, 42, 38, 4)));
+        tableRepository.save(new Table(null, 4, "m", 5, 150, 160, 70, 70, new Score(null, 40, 20, 50)));
+        tableRepository.save(new Table(null, 4, "m", 6, 150, 320, 70, 70, new Score(null, 45, 20, 20)));
+        tableRepository.save(new Table(null, 4, "m", 7, 150, 480, 70, 70, new Score(null, 45, 5, 0)));
 
         // Tulp 3
-        Table table8 = tableRepository.save(new Table(null, 6, "m", 8, 300, 50, 70, 120, new Score(null, 42, 38, 4)));
-        Table table9 = tableRepository.save(new Table(null, 4, "m", 9, 300, 270, 70, 70, new Score(null, 42, 38, 4)));
-        Table table10 = tableRepository.save(new Table(null, 4, "m", 10, 300, 430, 70, 70, new Score(null, 42, 38, 4)));
-        Table table11 = tableRepository.save(new Table(null, 3, "m", 11, 300, 590, 70, 70, new Score(null, 42, 38, 4)));
+        tableRepository.save(new Table(null, 6, "m", 8, 300, 50, 70, 120, new Score(null, 40, 0, 50)));
+        tableRepository.save(new Table(null, 4, "m", 9, 300, 270, 70, 70, new Score(null, 40, 0, 20)));
+        tableRepository.save(new Table(null, 4, "m", 10, 300, 430, 70, 70, new Score(null, 40, 0, 10)));
+        tableRepository.save(new Table(null, 3, "m", 11, 300, 590, 70, 70, new Score(null, 35, 0, 0)));
 
         // Tulp 4
-        Table table12 = tableRepository.save(new Table(null, 6, "m", 12, 450, 50, 70, 120, new Score(null, 42, 38, 4)));
-        Table table13 = tableRepository.save(new Table(null, 4, "m", 13, 450, 270, 70, 70, new Score(null, 42, 38, 4)));
-        Table table14 = tableRepository.save(new Table(null, 4, "m", 14, 450, 430, 70, 70, new Score(null, 42, 38, 4)));
-        Table table15 = tableRepository.save(new Table(null, 3, "m", 15, 450, 590, 70, 70, new Score(null, 42, 38, 4)));
+        tableRepository.save(new Table(null, 6, "m", 12, 450, 50, 70, 120, new Score(null, 30, 20, 30)));
+        tableRepository.save(new Table(null, 4, "m", 13, 450, 270, 70, 70, new Score(null, 30, 20, 15)));
+        tableRepository.save(new Table(null, 4, "m", 14, 450, 430, 70, 70, new Score(null, 20, 5, 0)));
+        tableRepository.save(new Table(null, 3, "m", 15, 450, 590, 70, 70, new Score(null, 20, 0, 0)));
 
         // Tulp 5
-        Table table16 = tableRepository.save(new Table(null, 2, "m", 16, 600, 50, 60, 60, new Score(null, 42, 38, 4)));
-        Table table17 = tableRepository.save(new Table(null, 2, "m", 17, 600, 200, 60, 60, new Score(null, 42, 38, 4)));
-        Table table18 = tableRepository.save(new Table(null, 2, "m", 18, 600, 350, 60, 60, new Score(null, 42, 38, 4)));
-        Table table19 = tableRepository.save(new Table(null, 2, "m", 19, 600, 500, 60, 60, new Score(null, 42, 38, 4)));
+        tableRepository.save(new Table(null, 2, "m", 16, 600, 50, 60, 60, new Score(null, 10, 50, 5)));
+        tableRepository.save(new Table(null, 2, "m", 17, 600, 200, 60, 60, new Score(null, 10, 50, 0)));
+        tableRepository.save(new Table(null, 2, "m", 18, 600, 350, 60, 60, new Score(null, 10, 35, 0)));
+        tableRepository.save(new Table(null, 2, "m", 19, 600, 500, 60, 60, new Score(null, 0, 10, 0)));
+    }
 
+    private void seedRandomReservations() {
+        List<Table> tables = tableRepository.findAll();
 
+        for (Table table : tables) {
+            Map<LocalDate, List<int[]>> reservedRangesByDate = new HashMap<>();
+            int reservationCount = random.nextInt(1, 5);
+            for (int i = 0; i < reservationCount; i++) {
+                Reservation reservation = createRandomReservation(table, reservedRangesByDate);
+                if (reservation != null) {
+                    reservationRepository.save(reservation);
+                }
+            }
+        }
+    }
 
-        // Tulp 1 - broneeringud
-        reservationRepository.save(new Reservation(null, table1.getId(), "2026-03-15T18:00", "2026-03-15T19:30", 2));
-        reservationRepository.save(new Reservation(null, table2.getId(), "2026-03-15T19:00", "2026-03-15T20:30", 2));
-        reservationRepository.save(new Reservation(null, table3.getId(), "2026-03-15T20:00", "2026-03-15T21:30", 2));
-        reservationRepository.save(new Reservation(null, table4.getId(), "2026-03-15T21:00", "2026-03-15T22:00", 2));
+    private Reservation createRandomReservation(Table table, Map<LocalDate, List<int[]>> reservedRangesByDate) {
+        for (int attempt = 0; attempt < 30; attempt++) {
+            LocalDate startDate = LocalDate.now().plusDays(random.nextInt(MIN_DAYS_AHEAD, MAX_DAYS_AHEAD + 1));
+            int startMinutes = randomTimeSlotBetween(OPENING_TIME, CLOSING_TIME.minusMinutes(MIN_RESERVATION_MINUTES));
 
-        // Tulp 2 - broneeringud
-        reservationRepository.save(new Reservation(null, table5.getId(), "2026-03-15T21:00", "2026-03-15T22:30", 4));
-        reservationRepository.save(new Reservation(null, table6.getId(), "2026-03-15T16:00", "2026-03-15T17:30", 4));
-        reservationRepository.save(new Reservation(null, table7.getId(), "2026-03-15T20:00", "2026-03-16T21:30", 4));
+            int durationMinutes = randomDurationMinutes((CLOSING_TIME.toSecondOfDay() / 60) - startMinutes);
+            if (durationMinutes <= 0) {
+                continue;
+            }
 
-        // Tulp 3 - broneeringud
-        reservationRepository.save(new Reservation(null, table8.getId(), "2026-03-15T15:00", "2026-03-16T16:30", 6));
-        reservationRepository.save(new Reservation(null, table9.getId(), "2026-03-15T15:00", "2026-03-15T16:30", 4));
-        reservationRepository.save(new Reservation(null, table10.getId(), "2026-03-15T16:00", "2026-03-15T17:30", 4));
-        reservationRepository.save(new Reservation(null, table11.getId(), "2026-03-15T18:00", "2026-03-15T19:30", 3));
+            int endMinutes = startMinutes + durationMinutes;
+            List<int[]> reservedRanges = reservedRangesByDate.computeIfAbsent(startDate, ignored -> new ArrayList<>());
+            if (hasOverlap(startMinutes, endMinutes, reservedRanges)) {
+                continue;
+            }
 
-        // Tulp 4 - broneeringud
-        reservationRepository.save(new Reservation(null, table12.getId(), "2026-03-16T02:00", "2026-03-16T03:30", 6));
-        reservationRepository.save(new Reservation(null, table13.getId(), "2026-03-16T03:00", "2026-03-16T04:30", 4));
-        reservationRepository.save(new Reservation(null, table14.getId(), "2026-03-16T04:00", "2026-03-16T05:30", 4));
-        reservationRepository.save(new Reservation(null, table15.getId(), "2026-03-16T05:00", "2026-03-16T06:30", 3));
+            reservedRanges.add(new int[] {startMinutes, endMinutes});
 
-        // Tulp 5 - broneeringud
-        reservationRepository.save(new Reservation(null, table16.getId(), "2026-03-16T09:00", "2026-03-16T10:00", 2));
-        reservationRepository.save(new Reservation(null, table17.getId(), "2026-03-16T10:00", "2026-03-16T11:30", 2));
-        reservationRepository.save(new Reservation(null, table18.getId(), "2026-03-16T11:00", "2026-03-16T11:45", 2));
-        reservationRepository.save(new Reservation(null, table19.getId(), "2026-03-16T15:00", "2026-03-16T16:30", 2));
+            LocalDateTime start = LocalDateTime.of(startDate, minutesToTime(startMinutes));
+            LocalDateTime end = LocalDateTime.of(startDate, minutesToTime(endMinutes));
+            int partySize = random.nextInt(1, table.getSeats() + 1);
+
+            return new Reservation(
+                null,
+                table.getId(),
+                start.format(DATE_TIME_FORMATTER),
+                end.format(DATE_TIME_FORMATTER),
+                partySize
+            );
+        }
+
+        return null;
+    }
+
+    private int randomDurationMinutes(int maxAllowedMinutes) {
+        int minSlots = MIN_RESERVATION_MINUTES / SLOT_MINUTES;
+        int maxSlots = Math.min(MAX_RESERVATION_MINUTES, maxAllowedMinutes) / SLOT_MINUTES;
+        if (maxSlots < minSlots) {
+            return -1;
+        }
+
+        int slots = random.nextInt(minSlots, maxSlots + 1);
+        return slots * SLOT_MINUTES;
+    }
+
+    private boolean hasOverlap(int startMinutes, int endMinutes, List<int[]> reservedRanges) {
+        for (int[] range : reservedRanges) {
+            if (startMinutes < range[1] && endMinutes > range[0]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int randomTimeSlotBetween(LocalTime min, LocalTime max) {
+        int minSlot = min.toSecondOfDay() / 60 / SLOT_MINUTES;
+        int maxSlot = max.toSecondOfDay() / 60 / SLOT_MINUTES;
+        int selectedSlot = random.nextInt(minSlot, maxSlot + 1);
+        return selectedSlot * SLOT_MINUTES;
+    }
+
+    private LocalTime minutesToTime(int minutesFromMidnight) {
+        return LocalTime.of(minutesFromMidnight / 60, minutesFromMidnight % 60);
     }
 }
