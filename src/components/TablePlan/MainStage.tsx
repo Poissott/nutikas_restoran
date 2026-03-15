@@ -4,6 +4,7 @@ import type { Dayjs } from "dayjs";
 import RestaurantGraphic from "./RestaurantGraphic";
 import TableGraphic from "./TableGraphic";
 import TimeTable from "../TimeTable";
+import Select from "react-select";
 
 const DEFAULT_TIMES = [
     "08:00", "08:15", "08:30", "08:45",
@@ -45,6 +46,8 @@ function MainStage() {
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [partysize, setPartysize] = useState<number | null>(null);
+  const [comforts, setComforts] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -99,6 +102,7 @@ function MainStage() {
             stageWidth={stageWidth}
             stageHeight={stageHeight}
             takenTableIds={takenTableIds}
+            partysize={partysize}
           />
         </Stage>
 
@@ -111,6 +115,56 @@ function MainStage() {
             loading={loading}
             selectedTime={selectedTime}
             onSelectedTimeChange={setSelectedTime}
+          />
+        </div>
+
+        <div style={{ position: "absolute", top: "5rem", left: "1rem", zIndex: 20 }}>
+          <p style={{ marginBottom: "0.5rem", color: "#2e2e2e", fontWeight: "bold", fontSize: "1.1rem" }}>
+            Select the amount of guests:
+          </p>
+          <Select
+            options={[
+              { value: "partysize1", label: "1" },
+              { value: "partysize2", label: "2" },
+              { value: "partysize3", label: "3" },
+              { value: "partysize4", label: "4" },
+              { value: "partysize5", label: "5" },
+              { value: "partysize6", label: "6" }
+            ]}
+            styles={{
+              option: (base) => ({ ...base, color: "#000" }),
+              menu: (base) => ({ ...base, zIndex: 100 }),
+            }}
+            onChange={(option) => setPartysize(Number(option?.value?.replace("partysize", "")))}
+            placeholder=""
+          />
+        </div>
+
+        <div style={{ position: "absolute", top: "11rem", left: "1rem", zIndex: 10, isolation: "isolate" }}>
+          <p style={{ marginBottom: "0.5rem", color: "#2e2e2e", fontWeight: "bold", fontSize: "1.1rem" }}>
+            Select your comforts:
+          </p>
+          <Select
+            options={[
+              { value: "quiet", label: "Quiet Corner" },
+              { value: "window", label: "At Window" },
+              { value: "playarea", label: "Play Area (Kids)" },
+            ]}
+            isMulti
+            styles={{
+              option: (base) => ({ ...base, color: "#000" }),
+              container: (base) => ({ ...base, width: "200px" }),
+              valueContainer: (base) => ({
+                ...base,
+                flexWrap: "wrap",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                gap: "2px",
+                marginTop: "0.5rem",
+              }),
+            }}
+            onChange={ (options) => setComforts(options.map(o => o.value)) }
+            placeholder=""
           />
         </div>
       </div>

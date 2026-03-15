@@ -26,8 +26,10 @@ public class DataInitializer implements CommandLineRunner {
     private static final int SLOT_MINUTES = 15;
     private static final int MIN_RESERVATION_MINUTES = 45;
     private static final int MAX_RESERVATION_MINUTES = 180;
+
+    // Broneeringud luuakse järgneva 30 päeva jooksul, sh täna.
     private static final int MIN_DAYS_AHEAD = 0;
-    private static final int MAX_DAYS_AHEAD = 6;
+    private static final int MAX_DAYS_AHEAD = 30;
 
     private final TableRepository tableRepository;
     private final ReservationRepository reservationRepository;
@@ -87,7 +89,7 @@ public class DataInitializer implements CommandLineRunner {
 
         for (Table table : tables) {
             Map<LocalDate, List<int[]>> reservedRangesByDate = new HashMap<>();
-            int reservationCount = random.nextInt(1, 5);
+            int reservationCount = random.nextInt(5, 25);
             for (int i = 0; i < reservationCount; i++) {
                 Reservation reservation = createRandomReservation(table, reservedRangesByDate);
                 if (reservation != null) {

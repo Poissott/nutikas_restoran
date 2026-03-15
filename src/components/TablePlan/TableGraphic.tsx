@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Layer, Rect, Text } from 'react-konva';
 
 
@@ -18,9 +18,10 @@ type TableGraphicProps = {
   stageWidth: number;
   stageHeight: number;
   takenTableIds: number[];
+  partysize?: number | null;
 };
 
-function TableGraphic({ stageWidth, stageHeight, takenTableIds }: TableGraphicProps) {
+function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize }: TableGraphicProps) {
   const [tableData, setTableData] = useState<RestaurantTable[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,6 +59,7 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds }: TableGraphicPr
         const tableX = roomX + table.positionX;
         const tableY = roomY + table.positionY;
         const isTaken = takenTableIds.includes(table.id);
+        const canFitParty = partysize ? table.seats >= partysize : true;
 
         return (
           <Rect
@@ -66,7 +68,7 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds }: TableGraphicPr
             y={tableY}
             width={tableWidth}
             height={tableHeight}
-            fill={isTaken ? "#fca5a5" : "#86efac"}
+            fill={isTaken ? "#fca5a5" : canFitParty ? "#86efac" : '#fed7aa'}
             cornerRadius={s(10)}
             stroke="#1f2937"
             strokeWidth={s(1.3)}
@@ -93,6 +95,7 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds }: TableGraphicPr
             align="center"
             text={`${table.seats}`}
             fontSize={s(14)}
+            fontStyle="bold"
             fill="#111827"
           />
         );
