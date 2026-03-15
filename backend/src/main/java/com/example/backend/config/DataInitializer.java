@@ -95,8 +95,8 @@ public class DataInitializer implements CommandLineRunner {
 
         for (Table table : tables) {
             Map<LocalDate, List<int[]>> reservedRangesByDate = new HashMap<>();
-            // Iga laua kohta luuakse 5 kuni 25 broneeringut. Seda võib kohandada vastavalt vajadusele.
-            int reservationCount = random.nextInt(5, 25);
+            // Iga laua kohta luuakse 10 kuni 40 broneeringut. Seda võib kohandada vastavalt vajadusele.
+            int reservationCount = random.nextInt(10, 40);
             for (int i = 0; i < reservationCount; i++) {
                 Reservation reservation = createRandomReservation(table, reservedRangesByDate);
                 if (reservation != null) {
