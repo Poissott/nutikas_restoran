@@ -1,5 +1,5 @@
 import Select from "react-select";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Dayjs } from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -25,18 +25,24 @@ type TimeTableProps = {
   loading: boolean;
   selectedTime: string | null;
   onSelectedTimeChange: (t: string | null) => void;
+  onDialogOpenChange?: (isOpen: boolean) => void;
 };
 
 function TimeTable({
   selectedDate,
   onSelectedDateChange,
   availableTimes,
-  reservations,
+  reservations: _reservations,
   loading,
   selectedTime,
   onSelectedTimeChange,
+  onDialogOpenChange,
 }: TimeTableProps) {
   const [isTimeTableOpen, setIsTimeTableOpen] = useState(true);
+
+  useEffect(() => {
+    onDialogOpenChange?.(isTimeTableOpen);
+  }, [isTimeTableOpen, onDialogOpenChange]);
 
   const timeOptions = useMemo<Option[]>(() => {
     if (!selectedDate) return [];

@@ -49,13 +49,16 @@ function MainStage() {
   const [partysize, setPartysize] = useState<number | null>(null);
   const [comforts, setComforts] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isTimeTableOpen, setIsTimeTableOpen] = useState(true);
 
   useEffect(() => {
     if (!selectedDate) {
+      setSelectedTime(null);
       setReservations([]);
       return;
     }
 
+    setSelectedTime(null);
     const dayKey = selectedDate.format("YYYY-MM-DD");
 
     (async () => {
@@ -93,6 +96,10 @@ function MainStage() {
     return { [dateKey]: DEFAULT_TIMES };
   }, [selectedDate]);
 
+  const controlPanelVisualState = isTimeTableOpen
+    ? { opacity: 0.45, filter: "saturate(0.7)", transition: "opacity 120ms ease" }
+    : { opacity: 1, filter: "none", transition: "opacity 120ms ease" };
+
   return (
     <div className="min-h-screen flex items-center justify-center overflow-auto">
       <div style={{ minWidth: stageWidth, minHeight: stageHeight, position: "relative" }}>
@@ -103,6 +110,8 @@ function MainStage() {
             stageHeight={stageHeight}
             takenTableIds={takenTableIds}
             partysize={partysize}
+            showSelectableTables={Boolean(selectedTime && partysize && !isTimeTableOpen)}
+            comforts={comforts}
           />
         </Stage>
 
@@ -115,14 +124,16 @@ function MainStage() {
             loading={loading}
             selectedTime={selectedTime}
             onSelectedTimeChange={setSelectedTime}
+            onDialogOpenChange={setIsTimeTableOpen}
           />
         </div>
 
-        <div style={{ position: "absolute", top: "5rem", left: "1rem", zIndex: 20 }}>
+        <div style={{ position: "absolute", top: "5rem", left: "1rem", zIndex: 20, ...controlPanelVisualState }}>
           <p style={{ marginBottom: "0.5rem", color: "#2e2e2e", fontWeight: "bold", fontSize: "1.1rem" }}>
             Select the amount of guests:
           </p>
-          <Select
+          {selectedDate && selectedTime && !isTimeTableOpen ? (
+            <Select
             options={[
               { value: "partysize1", label: "1" },
               { value: "partysize2", label: "2" },
@@ -138,15 +149,26 @@ function MainStage() {
             onChange={(option) => setPartysize(Number(option?.value?.replace("partysize", "")))}
             placeholder=""
           />
+          ) : (
+            <Select
+              options={[]}
+              placeholder={isTimeTableOpen ? "Click Submit in timetable first" : "Select date and time first"}
+              isDisabled
+              styles={{
+                placeholder: (base) => ({ ...base, color: "#888" }),
+              }}
+            />
+          )}
         </div>
 
-        <div style={{ position: "absolute", top: "11rem", left: "1rem", zIndex: 10, isolation: "isolate" }}>
+        <div style={{ position: "absolute", top: "11rem", left: "1rem", zIndex: 10, isolation: "isolate", ...controlPanelVisualState }}>
           <p style={{ marginBottom: "0.5rem", color: "#2e2e2e", fontWeight: "bold", fontSize: "1.1rem" }}>
             Select your comforts:
           </p>
-          <Select
+          {selectedDate && selectedTime && !isTimeTableOpen ? (
+            <Select
             options={[
-              { value: "quiet", label: "Quiet Corner" },
+              { value: "quietness", label: "Quiet Corner" },
               { value: "window", label: "At Window" },
               { value: "playarea", label: "Play Area (Kids)" },
             ]}
@@ -166,6 +188,17 @@ function MainStage() {
             onChange={ (options) => setComforts(options.map(o => o.value)) }
             placeholder=""
           />
+          ) : (
+            <Select
+              options={[]}
+              placeholder={isTimeTableOpen ? "Click Submit in timetable first" : "Select date and time first"}
+              isDisabled
+              styles={{
+                placeholder: (base) => ({ ...base, color: "#888" }),
+                container: (base) => ({ ...base, width: "200px" }),
+              }}
+            />  
+          )}
         </div>
       </div>
     </div>
