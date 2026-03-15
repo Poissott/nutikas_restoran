@@ -1,10 +1,12 @@
 import { Stage } from "react-konva";
 import { useEffect, useMemo, useState } from "react";
 import type { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import RestaurantGraphic from "./RestaurantGraphic";
-import TableGraphic from "./TableGraphic";
+import TableGraphic, { type SelectedTableInfo } from "./TableGraphic";
 import TimeTable from "../TimeTable";
 import Select from "react-select";
+import BookingConfirmation from "../BookingConfirmation";
 
 // Restoraniplaani põhikomponent, mis kasutab React Konva't restorani ja laudade graafiliseks kuvamiseks
 
@@ -56,11 +58,16 @@ function MainStage() {
   const [comforts, setComforts] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [isTimeTableOpen, setIsTimeTableOpen] = useState(true);
+  const [selectedTable, setSelectedTable] = useState<SelectedTableInfo | null>(null);
+  const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
+  const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
 
   useEffect(() => {
     if (!selectedDate) {
       setSelectedTime(null);
       setReservations([]);
+      setSelectedTable(null);
+      setIsBookingDialogOpen(false);
       return;
     }
 
@@ -98,12 +105,64 @@ function MainStage() {
       .map((r) => r.tableId);
   }, [reservations, selectedTime]);
 
-  // Vabad aegade defineerimine
+  // Vabade aegade defineerimine
   const availableTimes: AvailableTimes = useMemo(() => {
     if (!selectedDate) return {};
     const dateKey = selectedDate.format("YYYY-MM-DD");
     return { [dateKey]: DEFAULT_TIMES };
   }, [selectedDate]);
+
+  useEffect(() => {
+    if (!selectedTable) {
+      setIsBookingDialogOpen(false);
+    }
+  }, [selectedTable]);
+
+  // Broneeringu esitamise funktsioon, mis saadab POST-päringu serverile uue broneeringu loomiseks
+  const submitBooking = async () => {
+    if (!selectedTable || !selectedDate || !selectedTime || !partysize) {
+      return;
+    }
+
+    // Broneeringu algus- ja lõpuaja arvutamine, eeldades 90-minutilist broneeringut (saab vajadusel muuta)
+    const start = dayjs(`${selectedDate.format("YYYY-MM-DD")}T${selectedTime}`);
+    const end = start.add(90, "minute");
+
+    setIsSubmittingBooking(true);
+
+    // POST-päring broneeringu loomiseks
+    try {
+      const response = await fetch("/api/reservations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tableId: selectedTable.id,
+          startTime: start.format("YYYY-MM-DDTHH:mm"),
+          endTime: end.format("YYYY-MM-DDTHH:mm"),
+          partySize: partysize,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed: ${response.status}`);
+      }
+
+      // Pärast broneeringu edukat esitamist värskendatakse broneeringute nimekirja, et hõivatud lauad kajastuksid graafikus
+      const dayKey = selectedDate.format("YYYY-MM-DD");
+      const refreshed = await fetch(`/api/reservations/${dayKey}`);
+      if (refreshed.ok) {
+        const data = (await refreshed.json()) as Reservation[];
+        setReservations(data);
+      }
+
+      setIsBookingDialogOpen(false);
+      setSelectedTable(null);
+    } finally {
+      setIsSubmittingBooking(false);
+    }
+  };
 
   // Elementide varjutamine, kui ajavaliku modal on avatud
   const controlPanelVisualState = isTimeTableOpen
@@ -124,6 +183,7 @@ function MainStage() {
             partysize={partysize}
             showSelectableTables={Boolean(selectedTime && partysize && !isTimeTableOpen)}
             comforts={comforts}
+            onSelectionChange={setSelectedTable}
           />
         </Stage>
 
@@ -215,6 +275,20 @@ function MainStage() {
             />  
           )}
         </div>
+
+        <BookingConfirmation
+          canConfirm={Boolean(selectedTable)}
+          isDisabled={isTimeTableOpen}
+          isOpen={isBookingDialogOpen}
+          isSubmitting={isSubmittingBooking}
+          selectedTableId={selectedTable?.id ?? null}
+          selectedDate={selectedDate ? selectedDate.format("YYYY-MM-DD") : null}
+          selectedTime={selectedTime}
+          partySize={partysize}
+          onOpen={() => setIsBookingDialogOpen(true)}
+          onClose={() => setIsBookingDialogOpen(false)}
+          onSubmit={submitBooking}
+        />
       </div>
     </div>
   );

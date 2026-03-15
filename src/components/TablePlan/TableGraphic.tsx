@@ -18,6 +18,11 @@ type RestaurantTable = {
     };
 };
 
+export type SelectedTableInfo = {
+  id: number;
+  seats: number;
+};
+
 type TableGraphicProps = {
   stageWidth: number;
   stageHeight: number;
@@ -25,9 +30,18 @@ type TableGraphicProps = {
   partysize?: number | null;
   showSelectableTables?: boolean;
   comforts: string[];
+  onSelectionChange?: (table: SelectedTableInfo | null) => void;
 };
 
-function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showSelectableTables = false, comforts }: TableGraphicProps) {
+function TableGraphic({
+  stageWidth,
+  stageHeight,
+  takenTableIds,
+  partysize,
+  showSelectableTables = false,
+  comforts,
+  onSelectionChange,
+}: TableGraphicProps) {
   // Komponendi oleku haldamine
   const [tableData, setTableData] = useState<RestaurantTable[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -192,6 +206,50 @@ function TableGraphic({ stageWidth, stageHeight, takenTableIds, partysize, showS
 
     return blockedIds;
   }, [tableData, partysize, takenTableIds]);
+
+  // Valiku muutumise teavitamine vanemkomponendile
+  useEffect(() => {
+    if (!onSelectionChange) {
+      return;
+    }
+
+    // Kui lauad ei ole valitavad, siis tühjendame valiku
+    if (!showSelectableTables || !selectedTableId || !partysize) {
+      onSelectionChange(null);
+      return;
+    }
+
+    const selectedTable = tableData.find((table) => table.id === selectedTableId);
+
+    if (!selectedTable) {
+      onSelectionChange(null);
+      return;
+    }
+
+    // Laud loetakse sobimatuks, kui selle kohtade arv on väiksem kui külaliskonna suurus, kui laud on hõivatud või kui laud on blokeeritud külaliskonna suuruse tõttu
+    const isUnavailable =
+      selectedTable.seats < partysize
+      || takenTableIds.includes(selectedTable.id)
+      || blockedByPartyRuleTableIds.has(selectedTable.id);
+
+    if (isUnavailable) {
+      onSelectionChange(null);
+      return;
+    }
+
+    onSelectionChange({
+      id: selectedTable.id,
+      seats: selectedTable.seats,
+    });
+  }, [
+    blockedByPartyRuleTableIds,
+    onSelectionChange,
+    partysize,
+    selectedTableId,
+    showSelectableTables,
+    tableData,
+    takenTableIds,
+  ]);
 
   return (
     <Layer>
