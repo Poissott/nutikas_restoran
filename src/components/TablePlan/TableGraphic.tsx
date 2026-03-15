@@ -233,6 +233,16 @@ function TableGraphic({
       || blockedByPartyRuleTableIds.has(selectedTable.id);
 
     if (isUnavailable) {
+      setSelectedTableId(null);
+      onSelectionChange(null);
+      return;
+    }
+
+    const recommendation = recommendedBasedOnComfort(selectedTable);
+    const isRejectedByComfort = selectedComfortScores.length > 0 && !recommendation?.isRecommended;
+
+    if (isRejectedByComfort) {
+      setSelectedTableId(null);
       onSelectionChange(null);
       return;
     }
@@ -245,6 +255,7 @@ function TableGraphic({
     blockedByPartyRuleTableIds,
     onSelectionChange,
     partysize,
+    selectedComfortScores,
     selectedTableId,
     showSelectableTables,
     tableData,

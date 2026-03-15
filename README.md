@@ -309,9 +309,9 @@ You can see commit histories in various forms, but I will break down the product
 - Development of `Tableplan` - graphic UI elements of the restaurant room plan (5 hours)
     - Had to learn Konva framework, which I was not familiar with. Was not really hard. The entire graphic UI part of this I drew myself.
 - Initialization of pages `StartPage`, `ReservationPage` (3 hours)
-    - Just rewriting core aspects of React and TS
+    - Just writing of core aspects of React and TS
 - Development of `TimeTable` logic (6 hours)
-    - This one was slightly harder at times, I also sometimes used AI for ideas and sometimes out of convienence some generation. I wish I had developed the possibility to change the duration of the booking for the users (or something adjacent).
+    - This one was slightly harder at times, I also sometimes used AI for ideas and sometimes out of convienence some generation. I wish I had developed the possibility to change the duration of the booking for the users or something adjacent. For the latter I conducted a research around the booking websites and I could tell that many of them did not have any way to set an end time or duration (which does make sense). But the variation that caught my eye the most was the possibility to check for bookings longer than 3 hours (so the "unchecked" would be below 3 hours). That is something I would have wanted to implement.
 - Development of initial backend data randomizer logic (3 hours)
     - This was also slightly harder. If there was a function I wasn't aware of, I used AI to get a stronger understanding of the topic.
 - Development of guest and comfort selection (3 hours)
@@ -319,4 +319,6 @@ You can see commit histories in various forms, but I will break down the product
 - Development of recommendation logic (4 hours)
     - Some parts were easy and intuitive, some parts were hard. The hard parts here were probably the hardest things in this project, so out of calculative decision I used AI generation for some parts of this.
 - Development of confirmation system (4 hours)
-    - The core ideas here are not really hard (so I wrote them mostly myself), but as a very covering and finalizing part in the project, I also used AI generation to polish the edges of this project, so there would be less errors.
+    - The core ideas here are not really hard (so I wrote them mostly myself), but as a very covering and finalizing part in the project, I also used AI generation to polish a few edges of this part of the project, so there would be less errors.
+
+The StartPage could also be more stylish, but I put most of my effort to the most functional parts of this project.
